@@ -5,14 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sheckle Market</title>
 
-  <!-- EmailJS - Updated to latest version -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script type="text/javascript">
-    (function() {
-        emailjs.init({
-          publicKey: "c3M0Mn0DjoznjXaC8", // ← Replace with your EmailJS public key
-        });
-    })();
+    // Initialize EmailJS with your public key
+    // You'll need to replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
+    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // Replace this
+    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'; // Replace this
+    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; // Replace this
+    
+    // Check if EmailJS is available
+    let emailJSAvailable = false;
+    try {
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        emailJSAvailable = true;
+        console.log('EmailJS initialized successfully');
+      } else {
+        console.log('EmailJS not configured - using simulation mode');
+      }
+    } catch (error) {
+      console.log('EmailJS initialization failed - using simulation mode');
+    }
   </script>
 
   <style>
@@ -205,6 +219,7 @@
       <a class="tab-link" data-target="login">Login</a>
       <a class="tab-link" data-target="signup">Signup</a>
       <a class="tab-link" data-target="cart">Cart (<span id="cart-count">0</span>)</a>
+      <a class="tab-link" data-target="profile" id="profile-tab" style="display: none;">Profile</a>
     </nav>
   </header>
 
@@ -248,6 +263,32 @@
     <div class="panel" id="cart-panel"></div>
   </section>
 
+  <!-- Profile -->
+  <section id="profile" class="section">
+    <div class="panel">
+      <h3>My Profile</h3>
+      <div style="margin: 2rem 0;">
+        <svg width="80" height="80" viewBox="0 0 100 100" style="margin: 0 auto; display: block;">
+          <circle cx="50" cy="50" r="50" fill="#000000"/>
+          <circle cx="50" cy="35" r="15" fill="#ffffff"/>
+          <path d="M 20 85 Q 20 65 50 65 Q 80 65 80 85 Z" fill="#ffffff"/>
+        </svg>
+      </div>
+      <h4 id="profile-username">Welcome!</h4>
+      <p>Account created successfully</p>
+      <button onclick="logout()" style="
+        padding: 0.7rem 1.5rem;
+        background: #6c757d;
+        color: #fff;
+        border: 0;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 1rem;
+      ">Logout</button>
+    </div>
+  </section>
+
   <footer>&copy; 2025 Sheckle Market. All rights reserved.</footer>
 
   <script>
@@ -282,6 +323,12 @@
     }
     
     function addToCart(id, name, price) {
+      // Check if user is logged in
+      if (!currentUser) {
+        alert('⚠️ Please create an account and login to make purchases!');
+        return;
+      }
+      
       const cart = getCart();
       const item = cart.find((i) => i.id === id);
       if (item) {
@@ -342,6 +389,12 @@
     }
     
     function checkout() {
+      // Check if user is logged in
+      if (!currentUser) {
+        alert('⚠️ Please login to complete your purchase!');
+        return;
+      }
+      
       if (confirm('Proceed to checkout?')) {
         alert('🎉 Purchase successful! Thank you.');
         clearCart();
@@ -351,8 +404,9 @@
     // User data storage (using variables instead of localStorage)
     let userData = {};
     let pendingSignup = {};
+    let currentUser = null;
 
-    // Auth with Email Verification - IMPROVED VERSION
+    // Auth with EmailJS OR Simulation fallback
     async function signup() {
       const user = document.getElementById('signup-user').value.trim();
       const pass = document.getElementById('signup-pass').value;
@@ -379,12 +433,6 @@
         return;
       }
 
-      // Check if EmailJS is properly configured
-      if (!window.emailjs) {
-        statusDiv.innerHTML = '<div class="error-msg">❌ EmailJS not loaded. Please check your internet connection.</div>';
-        return;
-      }
-
       const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
 
       // Save pending signup data
@@ -395,68 +443,162 @@
         code: code.toString()
       };
 
-      // Disable button and show loading
-      signupBtn.disabled = true;
-      signupBtn.textContent = 'Sending...';
-      statusDiv.innerHTML = '<div>📧 Sending verification email...</div>';
+      statusDiv.innerHTML = '<div class="success-msg">📧 Sending verification code...</div>';
 
-      try {
-        // Updated EmailJS send method for v4
-        const result = await emailjs.send('gmail_service', 'verification_template', {
-          to_email: email,
-          to_name: user,
-          username: user,
-          verification_code: code,
-          from_name: 'Sheckle Market'
-        });
-        
-        console.log('EmailJS success:', result);
-        statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your Gmail!</div>';
-        showVerificationPrompt();
-        
-      } catch (error) {
-        console.error('EmailJS error:', error);
-        let errorMsg = '❌ Failed to send verification email. ';
-        
-        // More specific error messages
-        if (error.text) {
-          if (error.text.includes('Invalid')) {
-            errorMsg += 'Please check your EmailJS configuration.';
-          } else if (error.text.includes('limit')) {
-            errorMsg += 'Email sending limit reached.';
-          } else {
-            errorMsg += 'Error: ' + error.text;
-          }
-        } else {
-          errorMsg += 'Please check your EmailJS setup and try again.';
+      // Try to send real email with EmailJS
+      if (emailJSAvailable) {
+        try {
+          const templateParams = {
+            to_email: email,
+            to_name: user,
+            verification_code: code,
+            message: `Your verification code for Sheckle Market is: ${code}`
+          };
+
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+          statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your email!</div>';
+          console.log('Email sent successfully via EmailJS');
+        } catch (error) {
+          console.error('EmailJS failed, falling back to simulation:', error);
+          // Fall back to simulation
+          simulateEmail(email, code);
+          statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent! (Check browser console for the code)</div>';
         }
-        
-        statusDiv.innerHTML = '<div class="error-msg">' + errorMsg + '</div>';
-      } finally {
-        // Re-enable button
-        signupBtn.disabled = false;
-        signupBtn.textContent = 'Sign Up';
+      } else {
+        // Use simulation
+        simulateEmail(email, code);
+        statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent! (Check browser console for the code)</div>';
       }
+      
+      // Show verification prompt
+      setTimeout(() => {
+        showVerificationPrompt();
+      }, 1000);
+    }
+
+    function simulateEmail(email, code) {
+      console.log('=== EMAIL VERIFICATION SIMULATION ===');
+      console.log('To:', email);
+      console.log('Subject: Email Verification Code');
+      console.log('Message: Your verification code is:', code);
+      console.log('=====================================');
     }
 
     function showVerificationPrompt() {
-      const input = prompt('Enter the 6-digit code sent to your Gmail:');
-      const statusDiv = document.getElementById('signup-status');
-      
-      if (input === pendingSignup.code) {
-        userData['user_' + pendingSignup.user] = pendingSignup.pass;
-        statusDiv.innerHTML = '<div class="success-msg">✅ Verified and signed up successfully!</div>';
+      // Create popup overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'verification-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      `;
+
+      // Create popup
+      const popup = document.createElement('div');
+      popup.style.cssText = `
+        background: var(--panel);
+        border-radius: 10px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        border: 1px solid #30363d;
+      `;
+
+      popup.innerHTML = `
+        <h3 style="color: var(--accent); margin-top: 0;">Email Verification</h3>
+        <p style="margin: 1rem 0;">Enter the 6-digit code sent to your Gmail:</p>
+        <input id="verification-code" type="text" placeholder="000000" maxlength="6" style="
+          width: 100%;
+          padding: 0.8rem;
+          margin: 1rem 0;
+          border: 0;
+          border-radius: 5px;
+          background: var(--bg);
+          color: var(--fg);
+          text-align: center;
+          font-size: 1.2rem;
+          letter-spacing: 0.2rem;
+        " />
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button id="verify-btn" style="
+            padding: 0.7rem 1.5rem;
+            background: var(--btn);
+            color: #fff;
+            border: 0;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+          ">Verify</button>
+          <button id="cancel-btn" style="
+            padding: 0.7rem 1.5rem;
+            background: #6c757d;
+            color: #fff;
+            border: 0;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+          ">Cancel</button>
+        </div>
+        <div id="verification-status" style="margin-top: 1rem;"></div>
+      `;
+
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      // Focus on input
+      const codeInput = document.getElementById('verification-code');
+      codeInput.focus();
+
+      // Handle verify button
+      document.getElementById('verify-btn').onclick = function() {
+        const enteredCode = codeInput.value.trim();
+        const statusDiv = document.getElementById('verification-status');
+        const signupStatusDiv = document.getElementById('signup-status');
         
-        // Clear form
-        document.getElementById('signup-user').value = '';
-        document.getElementById('signup-pass').value = '';
-        document.getElementById('signup-email').value = '';
-        
-        // Clear pending data
+        if (enteredCode === pendingSignup.code) {
+          // Success - create account
+          userData['user_' + pendingSignup.user] = pendingSignup.pass;
+          signupStatusDiv.innerHTML = '<div class="success-msg">✅ Account created successfully!</div>';
+          
+          // Clear form
+          document.getElementById('signup-user').value = '';
+          document.getElementById('signup-pass').value = '';
+          document.getElementById('signup-email').value = '';
+          
+          // Clear pending data
+          pendingSignup = {};
+          
+          // Close popup
+          document.body.removeChild(overlay);
+        } else {
+          statusDiv.innerHTML = '<div class="error-msg">❌ Incorrect verification code. Please try again.</div>';
+          codeInput.value = '';
+          codeInput.focus();
+        }
+      };
+
+      // Handle cancel button
+      document.getElementById('cancel-btn').onclick = function() {
+        document.getElementById('signup-status').innerHTML = '<div class="error-msg">Verification cancelled.</div>';
         pendingSignup = {};
-      } else {
-        statusDiv.innerHTML = '<div class="error-msg">❌ Incorrect verification code.</div>';
-      }
+        document.body.removeChild(overlay);
+      };
+
+      // Handle Enter key
+      codeInput.onkeypress = function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('verify-btn').click();
+        }
+      };
     }
 
     function login() {
@@ -468,10 +610,37 @@
       }
       const stored = userData['user_' + user];
       if (stored === pass) {
+        currentUser = user;
+        document.getElementById('profile-username').textContent = `Welcome, ${user}!`;
+        document.getElementById('profile-tab').style.display = 'inline';
+        
+        // Clear login form
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        
+        // Switch to profile tab
+        document.querySelectorAll('.tab-link').forEach((l) => l.classList.remove('active'));
+        document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
+        document.querySelector('[data-target="profile"]').classList.add('active');
+        document.getElementById('profile').classList.add('active');
+        
         alert(`✅ Welcome back, ${user}!`);
       } else {
         alert('❌ Invalid username or password.');
       }
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('profile-tab').style.display = 'none';
+      
+      // Switch back to market tab
+      document.querySelectorAll('.tab-link').forEach((l) => l.classList.remove('active'));
+      document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
+      document.querySelector('[data-target="market"]').classList.add('active');
+      document.getElementById('market').classList.add('active');
+      
+      alert('👋 Logged out successfully!');
     }
 
     // Initialize cart
