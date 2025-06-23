@@ -9,14 +9,14 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script type="text/javascript">
     // EmailJS Configuration - REPLACE THESE WITH YOUR ACTUAL VALUES
-    const EMAILJS_PUBLIC_KEY = 'YOUR_ACTUAL_PUBLIC_KEY'; // Get from EmailJS dashboard
-    const EMAILJS_SERVICE_ID = 'YOUR_ACTUAL_SERVICE_ID'; // Get from EmailJS dashboard  
-    const EMAILJS_TEMPLATE_ID = 'YOUR_ACTUAL_TEMPLATE_ID'; // Get from EmailJS dashboard
+    const EMAILJS_PUBLIC_KEY = 'c3M0Mn0DjoznjXaC8'; // Get from EmailJS dashboard
+    const EMAILJS_SERVICE_ID = 'gmail_service'; // Get from EmailJS dashboard  
+    const EMAILJS_TEMPLATE_ID = 'verification_template'; // Get from EmailJS dashboard
     
     // Initialize EmailJS
     let emailJSAvailable = false;
     try {
-      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_ACTUAL_PUBLIC_KEY') {
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'c3M0Mn0DjoznjXaC8') {
         emailjs.init(EMAILJS_PUBLIC_KEY);
         emailJSAvailable = true;
         console.log('EmailJS initialized successfully');
@@ -209,49 +209,10 @@
       margin-top: 0.5rem;
     }
 
-    .setup-notice {
-      background: #fff3cd;
-      color: #856404;
-      padding: 1rem;
-      margin: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ffeaa7;
-    }
 
-    .setup-notice h4 {
-      margin-top: 0;
-      color: #856404;
-    }
-
-    .setup-notice code {
-      background: #f8f9fa;
-      padding: 0.2rem 0.4rem;
-      border-radius: 3px;
-      font-family: 'Courier New', monospace;
-    }
   </style>
 </head>
 <body>
-  <!-- Setup Notice -->
-  <div class="setup-notice" id="setup-notice">
-    <h4>⚠️ EmailJS Setup Required</h4>
-    <p>To enable real email verification, please:</p>
-    <ol style="text-align: left; margin: 1rem 0;">
-      <li>Create account at <a href="https://www.emailjs.com/" target="_blank">EmailJS.com</a></li>
-      <li>Set up Gmail service in EmailJS dashboard</li>
-      <li>Create email template with variables: <code>{{to_name}}</code>, <code>{{verification_code}}</code></li>
-      <li>Replace placeholder values in JavaScript with your actual credentials</li>
-    </ol>
-    <button onclick="document.getElementById('setup-notice').style.display='none'" style="
-      padding: 0.5rem 1rem;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    ">Got it!</button>
-  </div>
-
   <header>
     <h1>Sheckle Market</h1>
     <nav>
