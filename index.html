@@ -10,6 +10,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #0d1117;
       color: #c9d1d9;
+      scroll-behavior: smooth;
     }
     header {
       background-color: #161b22;
@@ -32,14 +33,17 @@
     nav a:hover {
       color: #58a6ff;
     }
+    section {
+      padding: 4rem 2rem;
+    }
     .hero {
       text-align: center;
-      padding: 4rem 2rem;
     }
     .hero h2 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
     }
+
     .market-section {
       background-color: #161b22;
       padding: 2rem;
@@ -48,13 +52,34 @@
       border-radius: 10px;
       text-align: center;
     }
-    .market-section h3 {
+
+    .market-item {
+      margin-top: 2rem;
+      background-color: #0d1117;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px solid #30363d;
+    }
+
+    .market-item h4 {
       margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
-    .price {
-      font-size: 2rem;
-      color: gold;
+
+    .market-item button {
+      padding: 0.7rem 1.5rem;
+      background-color: #238636;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
     }
+
+    .market-item button:hover {
+      background-color: #2ea043;
+    }
+
     .form-section {
       background-color: #161b22;
       padding: 2rem;
@@ -62,10 +87,12 @@
       max-width: 400px;
       border-radius: 10px;
     }
+
     .form-section h3 {
       text-align: center;
       margin-bottom: 1rem;
     }
+
     .form-section input {
       width: 100%;
       padding: 0.6rem;
@@ -75,6 +102,7 @@
       background-color: #0d1117;
       color: #c9d1d9;
     }
+
     .form-section button {
       width: 100%;
       padding: 0.7rem;
@@ -86,9 +114,11 @@
       margin-top: 1rem;
       cursor: pointer;
     }
+
     .form-section button:hover {
       background-color: #2ea043;
     }
+
     footer {
       text-align: center;
       padding: 1rem;
@@ -106,6 +136,7 @@
     <a href="#home">Home</a>
     <a href="#market">Market</a>
     <a href="#login">Login</a>
+    <a href="#signup">Sign Up</a>
   </nav>
 </header>
 
@@ -115,8 +146,13 @@
 </section>
 
 <section class="market-section" id="market">
-  <h3>Market Exchange Rate</h3>
+  <h3>Market Exchange</h3>
   <p class="price">💰 1 Trillion Sheckles = $2.99</p>
+
+  <div class="market-item">
+    <h4>1 Trillion Sheckles</h4>
+    <button>$2.99 – BUY</button>
+  </div>
 </section>
 
 <section class="form-section" id="login">
