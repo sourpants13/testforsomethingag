@@ -16,7 +16,7 @@
     // Initialize EmailJS
     let emailJSAvailable = false;
     try {
-      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'c3M0Mn0DjoznjXaC8') {
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_ACTUAL_PUBLIC_KEY') {
         emailjs.init(EMAILJS_PUBLIC_KEY);
         emailJSAvailable = true;
         console.log('EmailJS initialized successfully');
