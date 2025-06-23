@@ -9,7 +9,7 @@
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
     (function () {
-      emailjs.init("lopBgUvsQ7hcsT6W1"); // ← Replace with your EmailJS public key
+      emailjs.init("YOUR_PUBLIC_KEY"); // ← Replace with your EmailJS public key
     })();
   </script>
 
@@ -127,6 +127,10 @@
     .form-section button:hover {
       background: var(--btn-h);
     }
+    .form-section button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
     /* Cart */
     table {
       width: 100%;
@@ -177,6 +181,18 @@
       color: #8b949e;
       font-size: 0.9rem;
     }
+    
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    .success-msg {
+      color: #51cf66;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -220,7 +236,8 @@
       <input id="signup-user" type="text" placeholder="Username" />
       <input id="signup-pass" type="password" placeholder="Password" />
       <input id="signup-email" type="email" placeholder="Gmail" />
-      <button onclick="signup()">Sign Up</button>
+      <button id="signup-btn" onclick="signup()">Sign Up</button>
+      <div id="signup-status"></div>
     </div>
   </section>
 
@@ -247,17 +264,21 @@
       });
     });
 
-    // Cart Logic
+    // Cart Logic (using variables instead of localStorage)
+    let cartData = [];
+    
     function getCart() {
-      return JSON.parse(localStorage.getItem('cart') || '[]');
+      return cartData;
     }
+    
     function saveCart(cart) {
-      localStorage.setItem('cart', JSON.stringify(cart));
+      cartData = cart;
       document.getElementById('cart-count').textContent = cart.reduce(
         (n, i) => n + i.qty,
         0
       );
     }
+    
     function addToCart(id, name, price) {
       const cart = getCart();
       const item = cart.find((i) => i.id === id);
@@ -269,15 +290,18 @@
       saveCart(cart);
       alert('✅ Added to cart!');
     }
+    
     function removeItem(id) {
       let cart = getCart().filter((i) => i.id !== id);
       saveCart(cart);
       renderCart();
     }
+    
     function clearCart() {
       saveCart([]);
       renderCart();
     }
+    
     function renderCart() {
       const cart = getCart();
       const panel = document.getElementById('cart-panel');
@@ -314,76 +338,122 @@
           <button onclick="clearCart()">Clear Cart</button>
         </div>`;
     }
+    
     function checkout() {
       if (confirm('Proceed to checkout?')) {
         alert('🎉 Purchase successful! Thank you.');
         clearCart();
       }
     }
-    saveCart(getCart());
 
-    // Auth with Email Verification
-    function signup() {
+    // User data storage (using variables instead of localStorage)
+    let userData = {};
+    let pendingSignup = {};
+
+    // Auth with Email Verification - IMPROVED VERSION
+    async function signup() {
       const user = document.getElementById('signup-user').value.trim();
       const pass = document.getElementById('signup-pass').value;
       const email = document.getElementById('signup-email').value.trim();
+      const statusDiv = document.getElementById('signup-status');
+      const signupBtn = document.getElementById('signup-btn');
+
+      // Clear previous status
+      statusDiv.innerHTML = '';
 
       if (!user || !pass || !email) {
-        alert('Please fill in all fields.');
+        statusDiv.innerHTML = '<div class="error-msg">Please fill in all fields.</div>';
         return;
       }
 
-      if (localStorage.getItem('user_' + user)) {
-        alert('❌ Username already exists.');
+      if (userData['user_' + user]) {
+        statusDiv.innerHTML = '<div class="error-msg">❌ Username already exists.</div>';
         return;
       }
 
       // Simple Gmail validation
       if (!email.endsWith('@gmail.com')) {
-        alert('Please enter a valid Gmail address.');
+        statusDiv.innerHTML = '<div class="error-msg">Please enter a valid Gmail address.</div>';
+        return;
+      }
+
+      // Check if EmailJS is properly configured
+      if (!window.emailjs) {
+        statusDiv.innerHTML = '<div class="error-msg">❌ EmailJS not loaded. Please check your internet connection.</div>';
         return;
       }
 
       const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
 
       // Save pending signup data
-      localStorage.setItem('pending_email', email);
-      localStorage.setItem('pending_user', user);
-      localStorage.setItem('pending_pass', pass);
-      localStorage.setItem('email_verification_code', code);
+      pendingSignup = {
+        email: email,
+        user: user,
+        pass: pass,
+        code: code.toString()
+      };
 
-      emailjs
-        .send('gmail_service', 'verification_template', {
+      // Disable button and show loading
+      signupBtn.disabled = true;
+      signupBtn.textContent = 'Sending...';
+      statusDiv.innerHTML = '<div>📧 Sending verification email...</div>';
+
+      try {
+        // Updated EmailJS send method with better error handling
+        const result = await emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
           to_email: email,
+          to_name: user,
           username: user,
-          code: code,
-        })
-        .then(
-          () => {
-            alert('📧 Verification code sent to Gmail!');
-            showVerificationPrompt();
-          },
-          (error) => {
-            console.error(error);
-            alert('❌ Failed to send verification email.');
+          verification_code: code,
+          from_name: 'Sheckle Market'
+        });
+        
+        console.log('EmailJS success:', result);
+        statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your Gmail!</div>';
+        showVerificationPrompt();
+        
+      } catch (error) {
+        console.error('EmailJS error:', error);
+        let errorMsg = '❌ Failed to send verification email. ';
+        
+        // More specific error messages
+        if (error.text) {
+          if (error.text.includes('Invalid')) {
+            errorMsg += 'Please check your EmailJS configuration.';
+          } else if (error.text.includes('limit')) {
+            errorMsg += 'Email sending limit reached.';
+          } else {
+            errorMsg += 'Error: ' + error.text;
           }
-        );
+        } else {
+          errorMsg += 'Please check your EmailJS setup and try again.';
+        }
+        
+        statusDiv.innerHTML = '<div class="error-msg">' + errorMsg + '</div>';
+      } finally {
+        // Re-enable button
+        signupBtn.disabled = false;
+        signupBtn.textContent = 'Sign Up';
+      }
     }
 
     function showVerificationPrompt() {
       const input = prompt('Enter the 6-digit code sent to your Gmail:');
-      const savedCode = localStorage.getItem('email_verification_code');
-      if (input === savedCode) {
-        const user = localStorage.getItem('pending_user');
-        const pass = localStorage.getItem('pending_pass');
-        localStorage.setItem('user_' + user, pass);
-        alert('✅ Verified and signed up!');
-        localStorage.removeItem('pending_user');
-        localStorage.removeItem('pending_pass');
-        localStorage.removeItem('email_verification_code');
-        localStorage.removeItem('pending_email');
+      const statusDiv = document.getElementById('signup-status');
+      
+      if (input === pendingSignup.code) {
+        userData['user_' + pendingSignup.user] = pendingSignup.pass;
+        statusDiv.innerHTML = '<div class="success-msg">✅ Verified and signed up successfully!</div>';
+        
+        // Clear form
+        document.getElementById('signup-user').value = '';
+        document.getElementById('signup-pass').value = '';
+        document.getElementById('signup-email').value = '';
+        
+        // Clear pending data
+        pendingSignup = {};
       } else {
-        alert('❌ Incorrect code.');
+        statusDiv.innerHTML = '<div class="error-msg">❌ Incorrect verification code.</div>';
       }
     }
 
@@ -394,13 +464,16 @@
         alert('Please fill in all fields.');
         return;
       }
-      const stored = localStorage.getItem('user_' + user);
+      const stored = userData['user_' + user];
       if (stored === pass) {
         alert(`✅ Welcome back, ${user}!`);
       } else {
         alert('❌ Invalid username or password.');
       }
     }
+
+    // Initialize cart
+    saveCart(getCart());
   </script>
 </body>
 </html>
