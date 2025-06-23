@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sheckle Market</title>
 
-  <!-- EmailJS -->
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script>
-    (function () {
-      emailjs.init("c3M0Mn0DjoznjXaC8"); // ← Replace with your EmailJS public key
+  <!-- EmailJS - Updated to latest version -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+        emailjs.init({
+          publicKey: "c3M0Mn0DjoznjXaC8", // ← Replace with your EmailJS public key
+        });
     })();
   </script>
 
@@ -399,7 +401,7 @@
       statusDiv.innerHTML = '<div>📧 Sending verification email...</div>';
 
       try {
-        // Updated EmailJS send method with better error handling
+        // Updated EmailJS send method for v4
         const result = await emailjs.send('gmail_service', 'verification_template', {
           to_email: email,
           to_name: user,
