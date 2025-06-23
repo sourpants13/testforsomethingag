@@ -10,14 +10,14 @@
   <script type="text/javascript">
     // Initialize EmailJS with your public key
     // You'll need to replace 'YOUR_PUBLIC_KEY' with your actual EmailJS public key
-    const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'; // Replace this
-    const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID'; // Replace this
-    const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; // Replace this
+    const EMAILJS_PUBLIC_KEY = 'c3M0Mn0DjoznjXaC8'; // Replace this
+    const EMAILJS_SERVICE_ID = 'gmail_service'; // Replace this
+    const EMAILJS_TEMPLATE_ID = 'verification_template'; // Replace this
     
     // Check if EmailJS is available
     let emailJSAvailable = false;
     try {
-      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'c3M0Mn0DjoznjXaC8') {
         emailjs.init(EMAILJS_PUBLIC_KEY);
         emailJSAvailable = true;
         console.log('EmailJS initialized successfully');
@@ -455,7 +455,7 @@
             message: `Your verification code for Sheckle Market is: ${code}`
           };
 
-          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+          await emailjs.send(gmail_service, verification_template, templateParams);
           statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your email!</div>';
           console.log('Email sent successfully via EmailJS');
         } catch (error) {
