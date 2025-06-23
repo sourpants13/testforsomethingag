@@ -9,7 +9,7 @@
   <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <script>
     (function () {
-      emailjs.init("YOUR_PUBLIC_KEY"); // ← Replace with your EmailJS public key
+      emailjs.init("lopBgUvsQ7hcsT6W1"); // ← Replace with your EmailJS public key
     })();
   </script>
 
@@ -353,7 +353,7 @@
       localStorage.setItem('email_verification_code', code);
 
       emailjs
-        .send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+        .send('gmail_service', 'verification_template', {
           to_email: email,
           username: user,
           code: code,
