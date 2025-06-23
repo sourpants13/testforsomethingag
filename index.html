@@ -4,184 +4,403 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sheckle Market</title>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <script>
+    (function () {
+      emailjs.init("YOUR_PUBLIC_KEY"); // ← Replace with your EmailJS public key
+    })();
+  </script>
+
   <style>
-    /* ---------- Base ---------- */
-    :root { --bg:#0d1117; --fg:#c9d1d9; --panel:#161b22; --accent:#58a6ff; --btn:#238636; --btn-h:#2ea043 }
-    *{box-sizing:border-box} body{margin:0;font-family:'Segoe UI',sans-serif;background:var(--bg);color:var(--fg);scroll-behavior:smooth;transition:.3s}
-
-    /* ---------- Header / Nav ---------- */
-    header{background:var(--panel);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
-    header h1{margin:0;font-size:1.5rem;color:var(--accent)}
-    nav a{color:var(--fg);margin-left:1rem;font-weight:bold;text-decoration:none;cursor:pointer}
-    nav a:hover,nav a.active{color:var(--accent)}
-    nav a span{font-weight:normal}          /* cart count */
-
-    /* ---------- Sections (Tabs) ---------- */
-    .section{display:none;padding:3rem 2rem;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s}
-    .section.active{display:block;opacity:1;transform:translateY(0)}
-    .panel{background:var(--panel);border-radius:10px;margin:2rem auto;max-width:500px;padding:2rem;text-align:center}
-
-    /* ---------- Market ---------- */
-    .market-item{margin-top:2rem;background:var(--bg);border:1px solid #30363d;border-radius:10px;padding:1.5rem}
-    .market-item h4{margin:.5rem 0;font-size:1.4rem}
-    .market-item button{padding:.7rem 1.5rem;background:var(--btn);color:#fff;border:0;border-radius:5px;font-weight:bold;cursor:pointer}
-    .market-item button:hover{background:var(--btn-h)}
-
-    /* ---------- Forms ---------- */
-    .form-section input{width:100%;padding:.6rem;margin:.5rem 0;border:0;border-radius:5px;background:var(--bg);color:var(--fg)}
-    .form-section button{width:100%;padding:.7rem;background:var(--btn);color:#fff;border:0;border-radius:5px;font-weight:bold;cursor:pointer}
-    .form-section button:hover{background:var(--btn-h)}
-
-    /* ---------- Cart ---------- */
-    table{width:100%;border-collapse:collapse;margin:1rem 0}
-    th,td{padding:.6rem;border-bottom:1px solid #30363d;text-align:left}
-    td.qty{text-align:center;width:60px}
-    td.price,td.sub{text-align:right;width:80px}
-    .cart-actions button{margin:.5rem;padding:.6rem 1rem}
-    footer{text-align:center;padding:1rem;background:var(--bg);color:#8b949e;font-size:.9rem}
+    :root {
+      --bg: #0d1117;
+      --fg: #c9d1d9;
+      --panel: #161b22;
+      --accent: #58a6ff;
+      --btn: #238636;
+      --btn-h: #2ea043;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      scroll-behavior: smooth;
+      transition: all 0.3s ease;
+    }
+    header {
+      background: var(--panel);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+    nav a {
+      color: var(--fg);
+      margin-left: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    nav a:hover,
+    nav a.active {
+      color: var(--accent);
+    }
+    nav a span {
+      font-weight: normal;
+    }
+    .section {
+      display: none;
+      padding: 3rem 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .panel {
+      background: var(--panel);
+      border-radius: 10px;
+      margin: 2rem auto;
+      max-width: 500px;
+      padding: 2rem;
+      text-align: center;
+    }
+    /* Market */
+    .market-item {
+      margin-top: 2rem;
+      background: var(--bg);
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .market-item h4 {
+      margin: 0.5rem 0;
+      font-size: 1.4rem;
+    }
+    .market-item button {
+      padding: 0.7rem 1.5rem;
+      background: var(--btn);
+      color: #fff;
+      border: 0;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .market-item button:hover {
+      background: var(--btn-h);
+    }
+    /* Forms */
+    .form-section input {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.5rem 0;
+      border: 0;
+      border-radius: 5px;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    .form-section button {
+      width: 100%;
+      padding: 0.7rem;
+      background: var(--btn);
+      color: #fff;
+      border: 0;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .form-section button:hover {
+      background: var(--btn-h);
+    }
+    /* Cart */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    th,
+    td {
+      padding: 0.6rem;
+      border-bottom: 1px solid #30363d;
+      text-align: left;
+    }
+    td.qty {
+      text-align: center;
+      width: 60px;
+    }
+    td.price,
+    td.sub {
+      text-align: right;
+      width: 80px;
+    }
+    .cart-actions button {
+      margin: 0.5rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      font-weight: bold;
+    }
+    .cart-actions button:first-child {
+      background: var(--btn);
+      color: #fff;
+    }
+    .cart-actions button:first-child:hover {
+      background: var(--btn-h);
+    }
+    .cart-actions button:last-child {
+      background: #a40d0d;
+      color: #fff;
+    }
+    .cart-actions button:last-child:hover {
+      background: #d13131;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: var(--bg);
+      color: #8b949e;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <h1>Sheckle Market</h1>
+    <nav>
+      <a class="tab-link active" data-target="market">Market</a>
+      <a class="tab-link" data-target="login">Login</a>
+      <a class="tab-link" data-target="signup">Signup</a>
+      <a class="tab-link" data-target="cart">Cart (<span id="cart-count">0</span>)</a>
+    </nav>
+  </header>
 
-<header>
-  <h1>Sheckle Market</h1>
-  <nav>
-    <a class="tab-link active" data-target="market">Market</a>
-    <a class="tab-link" data-target="login">Login</a>
-    <a class="tab-link" data-target="signup">Signup</a>
-    <a class="tab-link" data-target="cart">Cart (<span id="cart-count">0</span>)</a>
-  </nav>
-</header>
+  <!-- Market -->
+  <section id="market" class="section active">
+    <div class="panel">
+      <h3>Market Exchange</h3>
+      <p>💰 1 Trillion Sheckles = $2.99</p>
 
-<!-- ========== Market ========== -->
-<section id="market" class="section active">
-  <div class="panel">
-    <h3>Market Exchange</h3>
-    <p>💰 1 Trillion Sheckles = $2.99</p>
-
-    <div class="market-item">
-      <h4>1 Trillion Sheckles</h4>
-      <button onclick="addToCart('sheckles1t','1 Trillion Sheckles',2.99)">$2.99 – BUY</button>
+      <div class="market-item">
+        <h4>1 Trillion Sheckles</h4>
+        <button onclick="addToCart('sheckles1t', '1 Trillion Sheckles', 2.99)">$2.99 – BUY</button>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ========== Login ========== -->
-<section id="login" class="section">
-  <div class="panel form-section">
-    <h3>Login</h3>
-    <input id="login-user" type="text" placeholder="Username">
-    <input id="login-pass" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
-</section>
+  <!-- Login -->
+  <section id="login" class="section">
+    <div class="panel form-section">
+      <h3>Login</h3>
+      <input id="login-user" type="text" placeholder="Username" />
+      <input id="login-pass" type="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+    </div>
+  </section>
 
-<!-- ========== Signup ========== -->
-<section id="signup" class="section">
-  <div class="panel form-section">
-    <h3>Sign Up</h3>
-    <input id="signup-user" type="text" placeholder="Username">
-    <input id="signup-pass" type="password" placeholder="Password">
-    <button onclick="signup()">Sign Up</button>
-  </div>
-</section>
+  <!-- Signup -->
+  <section id="signup" class="section">
+    <div class="panel form-section">
+      <h3>Sign Up</h3>
+      <input id="signup-user" type="text" placeholder="Username" />
+      <input id="signup-pass" type="password" placeholder="Password" />
+      <input id="signup-email" type="email" placeholder="Gmail" />
+      <button onclick="signup()">Sign Up</button>
+    </div>
+  </section>
 
-<!-- ========== Cart ========== -->
-<section id="cart" class="section">
-  <div class="panel" id="cart-panel">
-    <!-- content injected by renderCart() -->
-  </div>
-</section>
+  <!-- Cart -->
+  <section id="cart" class="section">
+    <div class="panel" id="cart-panel"></div>
+  </section>
 
-<footer>&copy; 2025 Sheckle Market. All rights reserved.</footer>
+  <footer>&copy; 2025 Sheckle Market. All rights reserved.</footer>
 
-<script>
-/* ---------- Tab Switching ---------- */
-document.querySelectorAll('.tab-link').forEach(link=>{
-  link.addEventListener('click',()=>{
-    document.querySelectorAll('.tab-link').forEach(l=>l.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    link.classList.add('active');
-    document.getElementById(link.dataset.target).classList.add('active');
-    if(link.dataset.target==='cart') renderCart();
-  });
-});
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-link').forEach((link) => {
+      link.addEventListener('click', () => {
+        document.querySelectorAll('.tab-link').forEach((l) =>
+          l.classList.remove('active')
+        );
+        document.querySelectorAll('.section').forEach((s) =>
+          s.classList.remove('active')
+        );
+        link.classList.add('active');
+        document.getElementById(link.dataset.target).classList.add('active');
+        if (link.dataset.target === 'cart') renderCart();
+      });
+    });
 
-/* ---------- Cart Logic ---------- */
-function getCart(){
-  return JSON.parse(localStorage.getItem('cart')||'[]');
-}
-function saveCart(cart){
-  localStorage.setItem('cart',JSON.stringify(cart));
-  document.getElementById('cart-count').textContent =
-    cart.reduce((n,i)=>n+i.qty,0);
-}
-function addToCart(id,name,price){
-  const cart=getCart();
-  const item=cart.find(i=>i.id===id);
-  if(item){ item.qty++; } else{ cart.push({id,name,price,qty:1}); }
-  saveCart(cart);
-  alert('✅ Added to cart!');
-}
-function removeItem(id){
-  let cart=getCart().filter(i=>i.id!==id);
-  saveCart(cart); renderCart();
-}
-function clearCart(){ saveCart([]); renderCart(); }
-function renderCart(){
-  const cart=getCart();
-  const panel=document.getElementById('cart-panel');
-  if(cart.length===0){
-    panel.innerHTML='<h3>Your cart is empty.</h3>';
-    return;
-  }
-  let rows=cart.map(i=>`
-    <tr>
-      <td>${i.name}</td>
-      <td class="qty">${i.qty}</td>
-      <td class="price">$${i.price.toFixed(2)}</td>
-      <td class="sub">$${(i.qty*i.price).toFixed(2)}</td>
-      <td><button onclick="removeItem('${i.id}')">Remove</button></td>
-    </tr>`).join('');
-  const total=cart.reduce((t,i)=>t+i.qty*i.price,0).toFixed(2);
-  panel.innerHTML=`
-    <h3>Your Cart</h3>
-    <table>
-      <thead><tr><th>Item</th><th>Qty</th><th class="price">Price</th><th class="sub">Subtotal</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <h4>Total: $${total}</h4>
-    <div class="cart-actions">
-      <button onclick="checkout()">Checkout</button>
-      <button onclick="clearCart()">Clear Cart</button>
-    </div>`;
-}
-function checkout(){
-  if(confirm('Proceed to checkout?')){
-    alert('🎉 Purchase successful! Thank you.');
-    clearCart();
-  }
-}
-/* initialize cart count on first load */
-saveCart(getCart());
+    // Cart Logic
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      document.getElementById('cart-count').textContent = cart.reduce(
+        (n, i) => n + i.qty,
+        0
+      );
+    }
+    function addToCart(id, name, price) {
+      const cart = getCart();
+      const item = cart.find((i) => i.id === id);
+      if (item) {
+        item.qty++;
+      } else {
+        cart.push({ id, name, price, qty: 1 });
+      }
+      saveCart(cart);
+      alert('✅ Added to cart!');
+    }
+    function removeItem(id) {
+      let cart = getCart().filter((i) => i.id !== id);
+      saveCart(cart);
+      renderCart();
+    }
+    function clearCart() {
+      saveCart([]);
+      renderCart();
+    }
+    function renderCart() {
+      const cart = getCart();
+      const panel = document.getElementById('cart-panel');
+      if (cart.length === 0) {
+        panel.innerHTML = '<h3>Your cart is empty.</h3>';
+        return;
+      }
+      let rows = cart
+        .map(
+          (i) => `
+        <tr>
+          <td>${i.name}</td>
+          <td class="qty">${i.qty}</td>
+          <td class="price">$${i.price.toFixed(2)}</td>
+          <td class="sub">$${(i.qty * i.price).toFixed(2)}</td>
+          <td><button onclick="removeItem('${i.id}')">Remove</button></td>
+        </tr>`
+        )
+        .join('');
+      const total = cart.reduce((t, i) => t + i.qty * i.price, 0).toFixed(2);
+      panel.innerHTML = `
+        <h3>Your Cart</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th><th>Qty</th><th class="price">Price</th><th class="sub">Subtotal</th><th></th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <h4>Total: $${total}</h4>
+        <div class="cart-actions">
+          <button onclick="checkout()">Checkout</button>
+          <button onclick="clearCart()">Clear Cart</button>
+        </div>`;
+    }
+    function checkout() {
+      if (confirm('Proceed to checkout?')) {
+        alert('🎉 Purchase successful! Thank you.');
+        clearCart();
+      }
+    }
+    saveCart(getCart());
 
-/* ---------- Auth (localStorage) ---------- */
-function signup(){
-  const u=document.getElementById('signup-user').value.trim(),
-        p=document.getElementById('signup-pass').value;
-  if(!u||!p) return alert('Fill in both fields.');
-  if(localStorage.getItem('user_'+u)) return alert('❌ Username exists.');
-  localStorage.setItem('user_'+u, p);
-  alert('✅ Signup successful! You can log in.');
-}
-function login(){
-  const u=document.getElementById('login-user').value.trim(),
-        p=document.getElementById('login-pass').value;
-  if(!u||!p) return alert('Fill in both fields.');
-  const stored=localStorage.getItem('user_'+u);
-  if(stored===p){ alert(`✅ Welcome back, ${u}!`); }
-  else{ alert('❌ Invalid username or password.'); }
-}
-</script>
+    // Auth with Email Verification
+    function signup() {
+      const user = document.getElementById('signup-user').value.trim();
+      const pass = document.getElementById('signup-pass').value;
+      const email = document.getElementById('signup-email').value.trim();
+
+      if (!user || !pass || !email) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      if (localStorage.getItem('user_' + user)) {
+        alert('❌ Username already exists.');
+        return;
+      }
+
+      // Simple Gmail validation
+      if (!email.endsWith('@gmail.com')) {
+        alert('Please enter a valid Gmail address.');
+        return;
+      }
+
+      const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+
+      // Save pending signup data
+      localStorage.setItem('pending_email', email);
+      localStorage.setItem('pending_user', user);
+      localStorage.setItem('pending_pass', pass);
+      localStorage.setItem('email_verification_code', code);
+
+      emailjs
+        .send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+          to_email: email,
+          username: user,
+          code: code,
+        })
+        .then(
+          () => {
+            alert('📧 Verification code sent to Gmail!');
+            showVerificationPrompt();
+          },
+          (error) => {
+            console.error(error);
+            alert('❌ Failed to send verification email.');
+          }
+        );
+    }
+
+    function showVerificationPrompt() {
+      const input = prompt('Enter the 6-digit code sent to your Gmail:');
+      const savedCode = localStorage.getItem('email_verification_code');
+      if (input === savedCode) {
+        const user = localStorage.getItem('pending_user');
+        const pass = localStorage.getItem('pending_pass');
+        localStorage.setItem('user_' + user, pass);
+        alert('✅ Verified and signed up!');
+        localStorage.removeItem('pending_user');
+        localStorage.removeItem('pending_pass');
+        localStorage.removeItem('email_verification_code');
+        localStorage.removeItem('pending_email');
+      } else {
+        alert('❌ Incorrect code.');
+      }
+    }
+
+    function login() {
+      const user = document.getElementById('login-user').value.trim();
+      const pass = document.getElementById('login-pass').value;
+      if (!user || !pass) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      const stored = localStorage.getItem('user_' + user);
+      if (stored === pass) {
+        alert(`✅ Welcome back, ${user}!`);
+      } else {
+        alert('❌ Invalid username or password.');
+      }
+    }
+  </script>
 </body>
 </html>
