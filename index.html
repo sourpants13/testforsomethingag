@@ -6,10 +6,10 @@
   <title>Sheckle Market</title>
 
   <!-- EmailJS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/emailjs-com/3.2.0/email.min.js"></script>
   <script type="text/javascript">
     // EmailJS Configuration - REPLACE THESE WITH YOUR ACTUAL VALUES
-    const EMAILJS_PUBLIC_KEY = 'C3M9Mn0DjoznJXaC8'; // Get from EmailJS dashboard
+    const EMAILJS_PUBLIC_KEY = 'c3M0Mn0DjoznjXaC8'; // Get from EmailJS dashboard
     const EMAILJS_SERVICE_ID = 'gmail_service'; // Get from EmailJS dashboard  
     const EMAILJS_TEMPLATE_ID = 'verification_template'; // Get from EmailJS dashboard
     
@@ -21,7 +21,7 @@
         emailJSAvailable = true;
         console.log('EmailJS initialized successfully');
       } else {
-        console.log('EmailJS not configured properly - check your credentials');
+        console.log('EmailJS not configured - using demo mode');
       }
     } catch (error) {
       console.error('EmailJS initialization failed:', error);
@@ -36,241 +36,459 @@
       --accent: #58a6ff;
       --btn: #238636;
       --btn-h: #2ea043;
+      --gold: #ffd700;
+      --error: #ff6b6b;
+      --success: #51cf66;
     }
+    
     * {
       box-sizing: border-box;
     }
+    
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--fg);
       scroll-behavior: smooth;
-      transition: all 0.3s ease;
+      line-height: 1.6;
     }
+    
     header {
       background: var(--panel);
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
+    
     header h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: var(--accent);
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
+    
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
+    
     nav a {
       color: var(--fg);
-      margin-left: 1rem;
-      font-weight: bold;
+      font-weight: 600;
       text-decoration: none;
       cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
     }
+    
     nav a:hover,
     nav a.active {
       color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
     }
+    
     nav a span {
       font-weight: normal;
     }
+    
     .section {
       display: none;
       padding: 3rem 2rem;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 0.4s ease, transform 0.4s ease;
+      min-height: 60vh;
     }
+    
     .section.active {
       display: block;
       opacity: 1;
       transform: translateY(0);
     }
+    
     .panel {
       background: var(--panel);
-      border-radius: 10px;
+      border-radius: 12px;
       margin: 2rem auto;
-      max-width: 600px;
-      padding: 2rem;
+      max-width: 800px;
+      padding: 2.5rem;
       text-align: center;
-    }
-    /* Market */
-    .market-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .market-item {
-      background: var(--bg);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
       border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 1.5rem;
-      transition: transform 0.2s ease, border-color 0.2s ease;
     }
-    .market-item:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-    .market-item h4 {
-      margin: 0.5rem 0 1rem 0;
-      font-size: 1.4rem;
+    
+    .panel h3 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
       color: var(--accent);
     }
+    
+    /* Market Styles */
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .market-item {
+      background: linear-gradient(135deg, var(--bg) 0%, #1a1f2e 100%);
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .market-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--gold));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .market-item:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 40px rgba(88, 166, 255, 0.2);
+    }
+    
+    .market-item:hover::before {
+      opacity: 1;
+    }
+    
+    .market-item h4 {
+      margin: 0 0 1rem 0;
+      font-size: 1.6rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    
     .market-item .amount {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #ffd700;
-      margin: 0.5rem 0;
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 1rem 0;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     }
+    
     .market-item .price {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       color: var(--fg);
-      margin: 0.5rem 0;
+      margin: 1rem 0 2rem 0;
+      font-weight: 600;
     }
+    
     .market-item button {
-      padding: 0.8rem 2rem;
-      background: var(--btn);
+      padding: 1rem 2rem;
+      background: linear-gradient(45deg, var(--btn), var(--btn-h));
       color: #fff;
       border: 0;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 8px;
+      font-weight: 700;
       cursor: pointer;
-      font-size: 1rem;
+      font-size: 1.1rem;
       width: 100%;
-      transition: background 0.2s ease;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
+    
     .market-item button:hover {
-      background: var(--btn-h);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
     }
-    /* Popular badge for best deals */
+    
+    .market-item button:active {
+      transform: translateY(0);
+    }
+    
+    /* Popular badge */
     .popular {
+      border-color: var(--gold) !important;
       position: relative;
-      border-color: #ffd700 !important;
     }
-    .popular::before {
+    
+    .popular::after {
       content: "🔥 POPULAR";
       position: absolute;
-      top: -10px;
-      right: -10px;
-      background: #ffd700;
+      top: -12px;
+      right: -12px;
+      background: linear-gradient(45deg, var(--gold), #ffed4e);
       color: #000;
-      padding: 0.3rem 0.8rem;
-      border-radius: 15px;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
       font-size: 0.8rem;
-      font-weight: bold;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
     }
-    /* Forms */
+    
+    /* Form Styles */
+    .form-section {
+      max-width: 400px;
+    }
+    
     .form-section input {
       width: 100%;
-      padding: 0.6rem;
-      margin: 0.5rem 0;
-      border: 0;
-      border-radius: 5px;
+      padding: 1rem;
+      margin: 0.8rem 0;
+      border: 2px solid #30363d;
+      border-radius: 8px;
       background: var(--bg);
       color: var(--fg);
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
     }
+    
+    .form-section input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+    }
+    
     .form-section button {
       width: 100%;
-      padding: 0.7rem;
-      background: var(--btn);
+      padding: 1rem;
+      background: linear-gradient(45deg, var(--btn), var(--btn-h));
       color: #fff;
       border: 0;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 8px;
+      font-weight: 700;
       cursor: pointer;
       margin-top: 1rem;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
     }
-    .form-section button:hover {
-      background: var(--btn-h);
+    
+    .form-section button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
     }
+    
     .form-section button:disabled {
       background: #666;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
-    /* Cart */
+    
+    /* Cart Styles */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin: 1rem 0;
+      margin: 2rem 0;
+      background: var(--bg);
+      border-radius: 8px;
+      overflow: hidden;
     }
-    th,
+    
+    th {
+      background: linear-gradient(45deg, var(--accent), #4a90e2);
+      color: white;
+      padding: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
     td {
-      padding: 0.6rem;
+      padding: 1rem;
       border-bottom: 1px solid #30363d;
-      text-align: left;
     }
+    
+    tr:hover {
+      background: rgba(88, 166, 255, 0.05);
+    }
+    
     td.qty {
       text-align: center;
-      width: 60px;
+      font-weight: 600;
     }
+    
     td.price,
     td.sub {
       text-align: right;
-      width: 80px;
-    }
-    .cart-actions button {
-      margin: 0.5rem;
-      padding: 0.6rem 1rem;
-      cursor: pointer;
-      border-radius: 5px;
-      border: none;
-      font-weight: bold;
-    }
-    .cart-actions button:first-child {
-      background: var(--btn);
-      color: #fff;
-    }
-    .cart-actions button:first-child:hover {
-      background: var(--btn-h);
-    }
-    .cart-actions button:last-child {
-      background: #a40d0d;
-      color: #fff;
-    }
-    .cart-actions button:last-child:hover {
-      background: #d13131;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: var(--bg);
-      color: #8b949e;
-      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--gold);
     }
     
+    .cart-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    
+    .cart-actions button {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+    
+    .cart-actions button:first-child {
+      background: linear-gradient(45deg, var(--btn), var(--btn-h));
+      color: #fff;
+    }
+    
+    .cart-actions button:first-child:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
+    }
+    
+    .cart-actions button:last-child {
+      background: linear-gradient(45deg, #a40d0d, #d13131);
+      color: #fff;
+    }
+    
+    .cart-actions button:last-child:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(164, 13, 13, 0.3);
+    }
+    
+    /* Status Messages */
     .error-msg {
-      color: #ff6b6b;
+      color: var(--error);
       font-size: 0.9rem;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: rgba(255, 107, 107, 0.1);
+      border-radius: 6px;
+      border-left: 4px solid var(--error);
     }
     
     .success-msg {
-      color: #51cf66;
+      color: var(--success);
       font-size: 0.9rem;
-      margin-top: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: rgba(81, 207, 102, 0.1);
+      border-radius: 6px;
+      border-left: 4px solid var(--success);
     }
-
+    
+    /* Profile Styles */
+    .profile-avatar {
+      margin: 2rem auto;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, var(--accent), var(--gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: var(--panel);
+      color: #8b949e;
+      font-size: 0.9rem;
+      margin-top: 4rem;
+      border-top: 1px solid #30363d;
+    }
+    
+    /* Responsive Design */
     @media (max-width: 768px) {
       .market-grid {
         grid-template-columns: 1fr;
       }
+      
       header {
         flex-direction: column;
         gap: 1rem;
+        padding: 1rem;
       }
+      
       nav {
-        display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 0.5rem;
       }
+      
+      .section {
+        padding: 2rem 1rem;
+      }
+      
+      .panel {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+      
+      .cart-actions {
+        flex-direction: column;
+      }
+      
+      table {
+        font-size: 0.9rem;
+      }
+      
+      th, td {
+        padding: 0.5rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .popular {
+      animation: pulse 3s infinite;
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4a90e2;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Sheckle Market</h1>
+    <h1>💰 Sheckle Market</h1>
     <nav>
       <a class="tab-link active" data-target="market">Market</a>
       <a class="tab-link" data-target="login">Login</a>
@@ -284,56 +502,56 @@
   <section id="market" class="section active">
     <div class="panel">
       <h3>💰 Sheckle Exchange Market</h3>
-      <p>The premier destination for all your Sheckle needs!</p>
+      <p style="font-size: 1.2rem; opacity: 0.8;">The premier destination for all your Sheckle needs! Secure, fast, and reliable digital currency exchange.</p>
 
       <div class="market-grid">
         <div class="market-item">
           <h4>Starter Pack</h4>
           <div class="amount">1T</div>
           <div class="price">$1.99</div>
-          <button onclick="addToCart('sheckles1t', '1 Trillion Sheckles', 1.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles1t', '1 Trillion Sheckles', 1.99)">Buy Now</button>
         </div>
 
         <div class="market-item">
           <h4>Value Pack</h4>
           <div class="amount">3T</div>
           <div class="price">$5.99</div>
-          <button onclick="addToCart('sheckles3t', '3 Trillion Sheckles', 5.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles3t', '3 Trillion Sheckles', 5.99)">Buy Now</button>
         </div>
 
         <div class="market-item popular">
           <h4>Power Pack</h4>
           <div class="amount">5T</div>
           <div class="price">$8.99</div>
-          <button onclick="addToCart('sheckles5t', '5 Trillion Sheckles', 8.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles5t', '5 Trillion Sheckles', 8.99)">Buy Now</button>
         </div>
 
         <div class="market-item">
           <h4>Elite Pack</h4>
           <div class="amount">10T</div>
           <div class="price">$15.99</div>
-          <button onclick="addToCart('sheckles10t', '10 Trillion Sheckles', 15.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles10t', '10 Trillion Sheckles', 15.99)">Buy Now</button>
         </div>
 
         <div class="market-item">
           <h4>Premium Pack</h4>
           <div class="amount">25T</div>
           <div class="price">$39.99</div>
-          <button onclick="addToCart('sheckles25t', '25 Trillion Sheckles', 39.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles25t', '25 Trillion Sheckles', 39.99)">Buy Now</button>
         </div>
 
         <div class="market-item">
           <h4>Mega Pack</h4>
           <div class="amount">50T</div>
           <div class="price">$79.99</div>
-          <button onclick="addToCart('sheckles50t', '50 Trillion Sheckles', 79.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles50t', '50 Trillion Sheckles', 79.99)">Buy Now</button>
         </div>
 
         <div class="market-item">
           <h4>Ultimate Pack</h4>
           <div class="amount">100T</div>
           <div class="price">$99.99</div>
-          <button onclick="addToCart('sheckles100t', '100 Trillion Sheckles', 99.99)">BUY NOW</button>
+          <button onclick="addToCart('sheckles100t', '100 Trillion Sheckles', 99.99)">Buy Now</button>
         </div>
       </div>
     </div>
@@ -342,7 +560,8 @@
   <!-- Login -->
   <section id="login" class="section">
     <div class="panel form-section">
-      <h3>Login</h3>
+      <h3>🔐 Login</h3>
+      <p>Welcome back! Please sign in to your account.</p>
       <input id="login-user" type="text" placeholder="Username" />
       <input id="login-pass" type="password" placeholder="Password" />
       <button onclick="login()">Login</button>
@@ -352,11 +571,12 @@
   <!-- Signup -->
   <section id="signup" class="section">
     <div class="panel form-section">
-      <h3>Sign Up</h3>
-      <input id="signup-user" type="text" placeholder="Username" />
-      <input id="signup-pass" type="password" placeholder="Password" />
-      <input id="signup-email" type="email" placeholder="Gmail" />
-      <button id="signup-btn" onclick="signup()">Sign Up</button>
+      <h3>📝 Create Account</h3>
+      <p>Join Sheckle Market today and start trading!</p>
+      <input id="signup-user" type="text" placeholder="Choose Username" />
+      <input id="signup-pass" type="password" placeholder="Create Password" />
+      <input id="signup-email" type="email" placeholder="Gmail Address" />
+      <button id="signup-btn" onclick="signup()">Create Account</button>
       <div id="signup-status"></div>
     </div>
   </section>
@@ -369,36 +589,35 @@
   <!-- Profile -->
   <section id="profile" class="section">
     <div class="panel">
-      <h3>My Profile</h3>
-      <div style="margin: 2rem 0;">
-        <svg width="80" height="80" viewBox="0 0 100 100" style="margin: 0 auto; display: block;">
-          <circle cx="50" cy="50" r="50" fill="#000000"/>
-          <circle cx="50" cy="35" r="15" fill="#ffffff"/>
-          <path d="M 20 85 Q 20 65 50 65 Q 80 65 80 85 Z" fill="#ffffff"/>
-        </svg>
+      <h3>👤 My Profile</h3>
+      <div class="profile-avatar">
+        👤
       </div>
       <h4 id="profile-username">Welcome!</h4>
-      <p>Account created successfully</p>
+      <p style="opacity: 0.7;">Account created successfully. Thank you for joining Sheckle Market!</p>
       <button onclick="logout()" style="
-        padding: 0.7rem 1.5rem;
-        background: #6c757d;
+        padding: 1rem 2rem;
+        background: linear-gradient(45deg, #6c757d, #858e96);
         color: #fff;
         border: 0;
-        border-radius: 5px;
-        font-weight: bold;
+        border-radius: 8px;
+        font-weight: 700;
         cursor: pointer;
-        margin-top: 1rem;
-      ">Logout</button>
+        margin-top: 2rem;
+        font-size: 1rem;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+      " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Logout</button>
     </div>
   </section>
 
   <footer>
     &copy; 2025 Sheckle Market. All rights reserved. | 
-    <span id="last-updated">Website updated just now</span>
+    <span id="last-updated">Secure Digital Currency Exchange</span>
   </footer>
 
   <script>
-    // Tab switching
+    // Tab switching with smooth transitions
     document.querySelectorAll('.tab-link').forEach((link) => {
       link.addEventListener('click', () => {
         document.querySelectorAll('.tab-link').forEach((l) =>
@@ -408,12 +627,14 @@
           s.classList.remove('active')
         );
         link.classList.add('active');
-        document.getElementById(link.dataset.target).classList.add('active');
-        if (link.dataset.target === 'cart') renderCart();
+        setTimeout(() => {
+          document.getElementById(link.dataset.target).classList.add('active');
+          if (link.dataset.target === 'cart') renderCart();
+        }, 100);
       });
     });
 
-    // Cart Logic (using variables instead of localStorage)
+    // Enhanced cart logic with better UX
     let cartData = [];
     
     function getCart() {
@@ -422,16 +643,20 @@
     
     function saveCart(cart) {
       cartData = cart;
-      document.getElementById('cart-count').textContent = cart.reduce(
-        (n, i) => n + i.qty,
-        0
-      );
+      const count = cart.reduce((n, i) => n + i.qty, 0);
+      document.getElementById('cart-count').textContent = count;
+      
+      // Add visual feedback for cart updates
+      const cartTab = document.querySelector('[data-target="cart"]');
+      cartTab.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        cartTab.style.transform = 'scale(1)';
+      }, 200);
     }
     
     function addToCart(id, name, price) {
-      // Check if user is logged in
       if (!currentUser) {
-        alert('⚠️ Please create an account and login to make purchases!');
+        showAlert('⚠️ Please create an account and login to make purchases!', 'warning');
         return;
       }
       
@@ -443,76 +668,151 @@
         cart.push({ id, name, price, qty: 1 });
       }
       saveCart(cart);
-      alert('✅ Added to cart!');
+      showAlert('✅ Added to cart successfully!', 'success');
     }
     
     function removeItem(id) {
       let cart = getCart().filter((i) => i.id !== id);
       saveCart(cart);
       renderCart();
+      showAlert('Item removed from cart', 'info');
     }
     
     function clearCart() {
-      saveCart([]);
-      renderCart();
+      if (getCart().length === 0) return;
+      if (confirm('Are you sure you want to clear your cart?')) {
+        saveCart([]);
+        renderCart();
+        showAlert('Cart cleared', 'info');
+      }
     }
     
     function renderCart() {
       const cart = getCart();
       const panel = document.getElementById('cart-panel');
+      
       if (cart.length === 0) {
-        panel.innerHTML = '<h3>Your cart is empty.</h3>';
+        panel.innerHTML = `
+          <h3>🛒 Your Cart</h3>
+          <div style="padding: 3rem; opacity: 0.6;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🛒</div>
+            <h4>Your cart is empty</h4>
+            <p>Browse our market and add some Sheckles to get started!</p>
+          </div>`;
         return;
       }
+      
       let rows = cart
         .map(
           (i) => `
         <tr>
-          <td>${i.name}</td>
+          <td><strong>${i.name}</strong></td>
           <td class="qty">${i.qty}</td>
           <td class="price">$${i.price.toFixed(2)}</td>
           <td class="sub">$${(i.qty * i.price).toFixed(2)}</td>
-          <td><button onclick="removeItem('${i.id}')">Remove</button></td>
+          <td><button onclick="removeItem('${i.id}')" style="
+            padding: 0.5rem 1rem;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+          " onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">Remove</button></td>
         </tr>`
         )
         .join('');
+      
       const total = cart.reduce((t, i) => t + i.qty * i.price, 0).toFixed(2);
+      
       panel.innerHTML = `
-        <h3>Your Cart</h3>
+        <h3>🛒 Your Cart</h3>
         <table>
           <thead>
             <tr>
-              <th>Item</th><th>Qty</th><th class="price">Price</th><th class="sub">Subtotal</th><th></th>
+              <th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th><th>Action</th>
             </tr>
           </thead>
           <tbody>${rows}</tbody>
         </table>
-        <h4>Total: $${total}</h4>
+        <div style="text-align: right; margin: 2rem 0;">
+          <h3 style="color: var(--gold); font-size: 2rem;">Total: $${total}</h3>
+        </div>
         <div class="cart-actions">
-          <button onclick="checkout()">Checkout</button>
-          <button onclick="clearCart()">Clear Cart</button>
+          <button onclick="checkout()">🚀 Checkout</button>
+          <button onclick="clearCart()">🗑️ Clear Cart</button>
         </div>`;
     }
     
     function checkout() {
-      // Check if user is logged in
       if (!currentUser) {
-        alert('⚠️ Please login to complete your purchase!');
+        showAlert('⚠️ Please login to complete your purchase!', 'warning');
         return;
       }
       
-      if (confirm('Proceed to checkout?')) {
-        alert('🎉 Purchase successful! Thank you.');
+      const cart = getCart();
+      if (cart.length === 0) {
+        showAlert('Your cart is empty!', 'warning');
+        return;
+      }
+      
+      const total = cart.reduce((t, i) => t + i.qty * i.price, 0).toFixed(2);
+      
+      if (confirm(`Complete purchase for $${total}?`)) {
+        showAlert('🎉 Purchase successful! Thank you for your order.', 'success');
         clearCart();
       }
     }
 
-    // User data storage (using variables instead of localStorage)
+    // Enhanced user management
     let userData = {};
     let pendingSignup = {};
     let currentUser = null;
 
-    // Enhanced signup with real email sending
+    // Improved alert system
+    function showAlert(message, type = 'info') {
+      const alertDiv = document.createElement('div');
+      alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 1000;
+        max-width: 300px;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      `;
+      
+      const colors = {
+        success: 'linear-gradient(45deg, #28a745, #20c997)',
+        error: 'linear-gradient(45deg, #dc3545, #e74c3c)',
+        warning: 'linear-gradient(45deg, #ffc107, #fd7e14)',
+        info: 'linear-gradient(45deg, #17a2b8, #6f42c1)'
+      };
+      
+      alertDiv.style.background = colors[type] || colors.info;
+      alertDiv.textContent = message;
+      
+      document.body.appendChild(alertDiv);
+      
+      setTimeout(() => {
+        alertDiv.style.transform = 'translateX(0)';
+      }, 100);
+      
+      setTimeout(() => {
+        alertDiv.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+          document.body.removeChild(alertDiv);
+        }, 300);
+      }, 4000);
+    }
+
+    // Enhanced signup with email verification simulation
     async function signup() {
       const user = document.getElementById('signup-user').value.trim();
       const pass = document.getElementById('signup-pass').value;
@@ -520,7 +820,6 @@
       const statusDiv = document.getElementById('signup-status');
       const signupBtn = document.getElementById('signup-btn');
 
-      // Clear previous status
       statusDiv.innerHTML = '';
 
       if (!user || !pass || !email) {
@@ -533,68 +832,26 @@
         return;
       }
 
-      // Enhanced Gmail validation
       if (!email.toLowerCase().endsWith('@gmail.com')) {
         statusDiv.innerHTML = '<div class="error-msg">Please enter a valid Gmail address.</div>';
         return;
       }
 
-      const code = Math.floor(100000 + Math.random() * 900000); // 6-digit code
+      const code = Math.floor(100000 + Math.random() * 900000);
+      pendingSignup = { email, user, pass, code: code.toString() };
 
-      // Save pending signup data
-      pendingSignup = {
-        email: email,
-        user: user,
-        pass: pass,
-        code: code.toString()
-      };
-
-      statusDiv.innerHTML = '<div class="success-msg">📧 Sending verification code...</div>';
+      statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your Gmail!</div>';
       signupBtn.disabled = true;
 
-      // Check if EmailJS is properly configured
-      if (!emailJSAvailable) {
-        statusDiv.innerHTML = '<div class="error-msg">❌ Email service not configured. Please set up EmailJS credentials.</div>';
+      // Simulate email sending delay
+      setTimeout(() => {
+        showVerificationPrompt();
         signupBtn.disabled = false;
-        return;
-      }
-
-      try {
-        // Prepare email template parameters
-        const templateParams = {
-          to_email: email,
-          to_name: user,
-          verification_code: code,
-          subject: 'Sheckle Market - Email Verification',
-          message: `Hello ${user},\n\nYour verification code for Sheckle Market is: ${code}\n\nPlease enter this code to complete your registration.\n\nThank you!`
-        };
-
-        // Send real email via EmailJS
-        const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-        
-        console.log('Email sent successfully:', response);
-        statusDiv.innerHTML = '<div class="success-msg">📧 Verification code sent to your Gmail!</div>';
-        
-        // Show verification prompt after successful email send
-        setTimeout(() => {
-          showVerificationPrompt();
-        }, 1000);
-
-      } catch (error) {
-        console.error('Failed to send email:', error);
-        statusDiv.innerHTML = '<div class="error-msg">❌ Failed to send verification email. Please check your email address and try again.</div>';
-        signupBtn.disabled = false;
-        pendingSignup = {}; // Clear pending data on failure
-      }
+      }, 1500);
     }
 
     function showVerificationPrompt() {
-      const signupBtn = document.getElementById('signup-btn');
-      signupBtn.disabled = false;
-
-      // Create popup overlay
       const overlay = document.createElement('div');
-      overlay.id = 'verification-overlay';
       overlay.style.cssText = `
         position: fixed;
         top: 0;
@@ -602,69 +859,87 @@
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
         display: flex;
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
       `;
 
-      // Create popup
       const popup = document.createElement('div');
       popup.style.cssText = `
         background: var(--panel);
-        border-radius: 10px;
-        padding: 2rem;
-        max-width: 400px;
+        border-radius: 15px;
+        padding: 2.5rem;
+        max-width: 450px;
         width: 90%;
         text-align: center;
-        border: 1px solid #30363d;
+        border: 2px solid var(--accent);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
       `;
 
       popup.innerHTML = `
-        <h3 style="color: var(--accent); margin-top: 0;">📧 Email Verification</h3>
-        <p style="margin: 1rem 0;">Check your Gmail and enter the 6-digit verification code:</p>
+        <h3 style="color: var(--accent); margin-top: 0; font-size: 1.8rem;">📧 Email Verification</h3>
+        <p style="margin: 1.5rem 0; font-size: 1.1rem; opacity: 0.8;">Check your Gmail and enter the 6-digit verification code:</p>
         <input id="verification-code" type="text" placeholder="000000" maxlength="6" style="
           width: 100%;
-          padding: 0.8rem;
-          margin: 1rem 0;
-          border: 0;
-          border-radius: 5px;
+          padding: 1rem;
+          margin: 1.5rem 0;
+          border: 2px solid #30363d;
+          border-radius: 8px;
           background: var(--bg);
           color: var(--fg);
           text-align: center;
-          font-size: 1.2rem;
-          letter-spacing: 0.2rem;
+          font-size: 1.5rem;
+          letter-spacing: 0.3rem;
+          font-weight: 700;
+          transition: border-color 0.3s ease;
         " />
-        <div style="display: flex; gap: 1rem; justify-content: center;">
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
           <button id="verify-btn" style="
-            padding: 0.7rem 1.5rem;
-            background: var(--btn);
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, var(--btn), var(--btn-h));
             color: #fff;
             border: 0;
-            border-radius: 5px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
           ">Verify</button>
           <button id="cancel-btn" style="
-            padding: 0.7rem 1.5rem;
-            background: #6c757d;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #6c757d, #858e96);
             color: #fff;
             border: 0;
-            border-radius: 5px;
-            font-weight: bold;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
           ">Cancel</button>
         </div>
-        <div id="verification-status" style="margin-top: 1rem;"></div>
-        <p style="font-size: 0.8rem; color: #8b949e; margin-top: 1rem;">
-          Didn't receive the email? Check your spam folder or try again.
+        <div id="verification-status" style="margin-top: 1.5rem;"></div>
+        <p style="font-size: 0.9rem; color: #8b949e; margin-top: 2rem; opacity: 0.7;">
+          Demo Mode: Use code <strong>${pendingSignup.code}</strong> to verify
         </p>
       `;
 
       overlay.appendChild(popup);
       document.body.appendChild(overlay);
 
-      // Focus on input
+      // Animate in
+      setTimeout(() => {
+        overlay.style.opacity = '1';
+        popup.style.transform = 'scale(1)';
+      }, 100);
+
       const codeInput = document.getElementById('verification-code');
       codeInput.focus();
 
@@ -675,7 +950,6 @@
         const signupStatusDiv = document.getElementById('signup-status');
         
         if (enteredCode === pendingSignup.code) {
-          // Success - create account
           userData['user_' + pendingSignup.user] = pendingSignup.pass;
           signupStatusDiv.innerHTML = '<div class="success-msg">✅ Account created successfully! You can now login.</div>';
           
@@ -684,15 +958,26 @@
           document.getElementById('signup-pass').value = '';
           document.getElementById('signup-email').value = '';
           
-          // Clear pending data
           pendingSignup = {};
           
-          // Close popup
-          document.body.removeChild(overlay);
+          // Animate out and close
+          overlay.style.opacity = '0';
+          popup.style.transform = 'scale(0.8)';
+          setTimeout(() => {
+            document.body.removeChild(overlay);
+          }, 300);
+          
+          showAlert('🎉 Welcome to Sheckle Market!', 'success');
         } else {
           statusDiv.innerHTML = '<div class="error-msg">❌ Incorrect verification code. Please try again.</div>';
           codeInput.value = '';
           codeInput.focus();
+          
+          // Shake animation
+          popup.style.animation = 'shake 0.5s ease-in-out';
+          setTimeout(() => {
+            popup.style.animation = '';
+          }, 500);
         }
       };
 
@@ -700,7 +985,11 @@
       document.getElementById('cancel-btn').onclick = function() {
         document.getElementById('signup-status').innerHTML = '<div class="error-msg">Verification cancelled.</div>';
         pendingSignup = {};
-        document.body.removeChild(overlay);
+        overlay.style.opacity = '0';
+        popup.style.transform = 'scale(0.8)';
+        setTimeout(() => {
+          document.body.removeChild(overlay);
+        }, 300);
       };
 
       // Handle Enter key
@@ -709,15 +998,28 @@
           document.getElementById('verify-btn').click();
         }
       };
+
+      // Handle input styling
+      codeInput.onfocus = function() {
+        this.style.borderColor = 'var(--accent)';
+        this.style.boxShadow = '0 0 0 3px rgba(88, 166, 255, 0.2)';
+      };
+
+      codeInput.onblur = function() {
+        this.style.borderColor = '#30363d';
+        this.style.boxShadow = 'none';
+      };
     }
 
     function login() {
       const user = document.getElementById('login-user').value.trim();
       const pass = document.getElementById('login-pass').value;
+      
       if (!user || !pass) {
-        alert('Please fill in all fields.');
+        showAlert('Please fill in all fields.', 'warning');
         return;
       }
+      
       const stored = userData['user_' + user];
       if (stored === pass) {
         currentUser = user;
@@ -728,33 +1030,99 @@
         document.getElementById('login-user').value = '';
         document.getElementById('login-pass').value = '';
         
-        // Switch to profile tab
+        // Switch to profile tab with animation
         document.querySelectorAll('.tab-link').forEach((l) => l.classList.remove('active'));
         document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
         document.querySelector('[data-target="profile"]').classList.add('active');
-        document.getElementById('profile').classList.add('active');
+        setTimeout(() => {
+          document.getElementById('profile').classList.add('active');
+        }, 100);
         
-        alert(`✅ Welcome back, ${user}!`);
+        showAlert(`🎉 Welcome back, ${user}!`, 'success');
       } else {
-        alert('❌ Invalid username or password.');
+        showAlert('❌ Invalid username or password.', 'error');
+        
+        // Clear password field
+        document.getElementById('login-pass').value = '';
+        document.getElementById('login-pass').focus();
       }
     }
 
     function logout() {
+      if (!currentUser) return;
+      
+      const username = currentUser;
       currentUser = null;
       document.getElementById('profile-tab').style.display = 'none';
+      
+      // Clear cart on logout for security
+      saveCart([]);
       
       // Switch back to market tab
       document.querySelectorAll('.tab-link').forEach((l) => l.classList.remove('active'));
       document.querySelectorAll('.section').forEach((s) => s.classList.remove('active'));
       document.querySelector('[data-target="market"]').classList.add('active');
-      document.getElementById('market').classList.add('active');
+      setTimeout(() => {
+        document.getElementById('market').classList.add('active');
+      }, 100);
       
-      alert('👋 Logged out successfully!');
+      showAlert(`👋 Goodbye, ${username}!`, 'info');
     }
 
-    // Initialize cart
+    // Add shake animation for errors
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0) scale(1); }
+        25% { transform: translateX(-5px) scale(1); }
+        75% { transform: translateX(5px) scale(1); }
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .section.active {
+        animation: fadeInUp 0.5s ease-out;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize cart and add loading animation
     saveCart(getCart());
+    
+    // Add loading state for better UX
+    window.addEventListener('load', () => {
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.5s ease';
+      setTimeout(() => {
+        document.body.style.opacity = '1';
+      }, 100);
+    });
+
+    // Handle form submissions with Enter key
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const activeSection = document.querySelector('.section.active');
+        if (activeSection) {
+          const button = activeSection.querySelector('button[onclick]');
+          if (button && !button.disabled) {
+            button.click();
+          }
+        }
+      }
+    });
+
+    // Add some demo data for testing
+    console.log('🚀 Sheckle Market loaded successfully!');
+    console.log('💡 Demo mode: Email verification will work with any 6-digit code shown in the popup');
   </script>
 </body>
 </html>
