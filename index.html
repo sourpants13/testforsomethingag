@@ -1,841 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sheckle Market</title>
-
-  <!-- EmailJS -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/emailjs-com/3.2.0/email.min.js"></script>
-  <script type="text/javascript">
-    // EmailJS Configuration - REPLACE THESE WITH YOUR ACTUAL VALUES
-    const EMAILJS_PUBLIC_KEY = 'c3M0Mn0DjoznjXaC8'; // Replace with your EmailJS public key
-    const EMAILJS_SERVICE_ID = 'gmail_service'; // Replace with your EmailJS service ID
-    const EMAILJS_TEMPLATE_ID = 'verification_template'; // Replace with your EmailJS template ID
-    
-    // Initialize EmailJS
-    let emailJSAvailable = false;
-    try {
-      if (typeof emailjs !== 'undefined' && EMAILJS_PUBLIC_KEY !== 'YOUR_ACTUAL_PUBLIC_KEY') {
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        emailJSAvailable = true;
-        console.log('EmailJS initialized successfully');
-      } else {
-        console.log('EmailJS not configured - using demo mode');
-      }
-    } catch (error) {
-      console.error('EmailJS initialization failed:', error);
-    }
-  </script>
-
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <style>
-    :root {
-      --bg: #0d1117;
-      --fg: #c9d1d9;
-      --panel: #161b22;
-      --accent: #58a6ff;
-      --btn: #238636;
-      --btn-h: #2ea043;
-      --gold: #ffd700;
-      --error: #ff6b6b;
-      --success: #51cf66;
-    }
-    
-    * {
-      box-sizing: border-box;
-    }
-    
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      scroll-behavior: smooth;
-      line-height: 1.6;
-    }
-    
-    header {
-      background: var(--panel);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: var(--accent);
-      font-weight: 700;
-      background: linear-gradient(45deg, var(--accent), var(--gold));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    
-    nav {
-      display: flex;
-      gap: 1rem;
-    }
-    
-    nav a {
-      color: var(--fg);
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-    
-    nav a:hover,
-    nav a.active {
-      color: var(--accent);
-      background: rgba(88, 166, 255, 0.1);
-    }
-    
-    nav a span {
-      font-weight: normal;
-    }
-    
-    .section {
-      display: none;
-      padding: 3rem 2rem;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      min-height: 60vh;
-    }
-    
-    .section.active {
-      display: block;
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    .panel {
-      background: var(--panel);
-      border-radius: 12px;
-      margin: 2rem auto;
-      max-width: 800px;
-      padding: 2.5rem;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      border: 1px solid #30363d;
-    }
-    
-    .panel h3 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: var(--accent);
-    }
-    
-    /* Market Styles */
-    .market-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-    
-    .market-item {
-      background: linear-gradient(135deg, var(--bg) 0%, #1a1f2e 100%);
-      border: 2px solid #30363d;
-      border-radius: 12px;
-      padding: 2rem;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .market-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--gold));
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .market-item:hover {
-      transform: translateY(-8px);
-      border-color: var(--accent);
-      box-shadow: 0 20px 40px rgba(88, 166, 255, 0.2);
-    }
-    
-    .market-item:hover::before {
-      opacity: 1;
-    }
-    
-    .market-item h4 {
-      margin: 0 0 1rem 0;
-      font-size: 1.6rem;
-      color: var(--accent);
-      font-weight: 700;
-    }
-    
-    .market-item .amount {
-      font-size: 3rem;
-      font-weight: 900;
-      color: var(--gold);
-      margin: 1rem 0;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    }
-    
-    .market-item .price {
-      font-size: 1.4rem;
-      color: var(--fg);
-      margin: 1rem 0 2rem 0;
-      font-weight: 600;
-    }
-    
-    .market-item button {
-      padding: 1rem 2rem;
-      background: linear-gradient(45deg, var(--btn), var(--btn-h));
-      color: #fff;
-      border: 0;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 1.1rem;
-      width: 100%;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .market-item button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
-    }
-    
-    .market-item button:active {
-      transform: translateY(0);
-    }
-    
-    /* Popular badge */
-    .popular {
-      border-color: var(--gold) !important;
-      position: relative;
-    }
-    
-    .popular::after {
-      content: "🔥 POPULAR";
-      position: absolute;
-      top: -12px;
-      right: -12px;
-      background: linear-gradient(45deg, var(--gold), #ffed4e);
-      color: #000;
-      padding: 0.4rem 1rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-    }
-    
-    /* Form Styles */
-    .form-section {
-      max-width: 400px;
-    }
-    
-    .form-section input {
-      width: 100%;
-      padding: 1rem;
-      margin: 0.8rem 0;
-      border: 2px solid #30363d;
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--fg);
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
-    
-    .form-section input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
-    }
-    
-    .form-section button {
-      width: 100%;
-      padding: 1rem;
-      background: linear-gradient(45deg, var(--btn), var(--btn-h));
-      color: #fff;
-      border: 0;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-    }
-    
-    .form-section button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
-    }
-    
-    .form-section button:disabled {
-      background: #666;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    
-    /* Cart Styles */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 2rem 0;
-      background: var(--bg);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    th {
-      background: linear-gradient(45deg, var(--accent), #4a90e2);
-      color: white;
-      padding: 1rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid #30363d;
-    }
-    
-    tr:hover {
-      background: rgba(88, 166, 255, 0.05);
-    }
-    
-    td.qty {
-      text-align: center;
-      font-weight: 600;
-    }
-    
-    td.price,
-    td.sub {
-      text-align: right;
-      font-weight: 600;
-      color: var(--gold);
-    }
-    
-    .cart-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      margin-top: 2rem;
-    }
-    
-    .cart-actions button {
-      padding: 1rem 2rem;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-      font-weight: 700;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-    }
-    
-    .cart-actions button:first-child {
-      background: linear-gradient(45deg, var(--btn), var(--btn-h));
-      color: #fff;
-    }
-    
-    .cart-actions button:first-child:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(35, 134, 54, 0.3);
-    }
-    
-    .cart-actions button:last-child {
-      background: linear-gradient(45deg, #a40d0d, #d13131);
-      color: #fff;
-    }
-    
-    .cart-actions button:last-child:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(164, 13, 13, 0.3);
-    }
-    
-    /* Status Messages */
-    .error-msg {
-      color: var(--error);
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      padding: 0.8rem;
-      background: rgba(255, 107, 107, 0.1);
-      border-radius: 6px;
-      border-left: 4px solid var(--error);
-    }
-    
-    .success-msg {
-      color: var(--success);
-      font-size: 0.9rem;
-      margin-top: 1rem;
-      padding: 0.8rem;
-      background: rgba(81, 207, 102, 0.1);
-      border-radius: 6px;
-      border-left: 4px solid var(--success);
-    }
-    
-    /* Loading Spinner */
-    .loading-spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: #fff;
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 10px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Profile Styles */
-    .profile-avatar {
-      margin: 2rem auto;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, var(--accent), var(--gold));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: white;
-    }
-    
-    /* Footer */
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: var(--panel);
-      color: #8b949e;
-      font-size: 0.9rem;
-      margin-top: 4rem;
-      border-top: 1px solid #30363d;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .market-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      header {
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem;
-      }
-      
-      nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem;
-      }
-      
-      .section {
-        padding: 2rem 1rem;
-      }
-      
-      .panel {
-        padding: 1.5rem;
-        margin: 1rem;
-      }
-      
-      .cart-actions {
-        flex-direction: column;
-      }
-      
-      table {
-        font-size: 0.9rem;
-      }
-      
-      th, td {
-        padding: 0.5rem;
-      }
-    }
-    
-    /* Animations */
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    
-    .popular {
-      animation: pulse 3s infinite;
-    }
-    
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: #4a90e2;
-    }
+    .tab-content { display: none; animation: fade 0.5s ease-in-out; }
+    .tab-active { display: block; }
+    @keyframes fade { from {opacity: 0;} to {opacity: 1;} }
   </style>
 </head>
-<body>
-  <header>
-    <h1>💰 Sheckle Market</h1>
-    <nav>
-      <a class="tab-link active" data-target="market">Market</a>
-      <a class="tab-link" data-target="login">Login</a>
-      <a class="tab-link" data-target="signup">Signup</a>
-      <a class="tab-link" data-target="cart">Cart (<span id="cart-count">0</span>)</a>
-      <a class="tab-link" data-target="profile" id="profile-tab" style="display: none;">Profile</a>
-    </nav>
-  </header>
+<body class="bg-gray-900 text-white min-h-screen">
+  <!-- Navigation -->
+  <nav class="bg-gray-800 p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">🪙 Sheckle Market</h1>
+    <div class="space-x-4">
+      <button onclick="showTab('market')">Market</button>
+      <button onclick="showTab('cart')">Cart</button>
+      <button onclick="showTab('login')">Login</button>
+      <button onclick="showTab('signup')">Signup</button>
+    </div>
+  </nav>
 
   <!-- Market -->
-  <section id="market" class="section active">
-    <div class="panel">
-      <h3>💰 Sheckle Exchange Market</h3>
-      <p style="font-size: 1.2rem; opacity: 0.8;">The premier destination for all your Sheckle needs! Secure, fast, and reliable digital currency exchange.</p>
-
-      <div class="market-grid">
-        <div class="market-item">
-          <h4>Starter Pack</h4>
-          <div class="amount">1T</div>
-          <div class="price">$1.99</div>
-          <button onclick="addToCart('sheckles1t', '1 Trillion Sheckles', 1.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item">
-          <h4>Value Pack</h4>
-          <div class="amount">3T</div>
-          <div class="price">$5.99</div>
-          <button onclick="addToCart('sheckles3t', '3 Trillion Sheckles', 5.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item popular">
-          <h4>Power Pack</h4>
-          <div class="amount">5T</div>
-          <div class="price">$8.99</div>
-          <button onclick="addToCart('sheckles5t', '5 Trillion Sheckles', 8.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item">
-          <h4>Elite Pack</h4>
-          <div class="amount">10T</div>
-          <div class="price">$15.99</div>
-          <button onclick="addToCart('sheckles10t', '10 Trillion Sheckles', 15.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item">
-          <h4>Premium Pack</h4>
-          <div class="amount">25T</div>
-          <div class="price">$39.99</div>
-          <button onclick="addToCart('sheckles25t', '25 Trillion Sheckles', 39.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item">
-          <h4>Mega Pack</h4>
-          <div class="amount">50T</div>
-          <div class="price">$79.99</div>
-          <button onclick="addToCart('sheckles50t', '50 Trillion Sheckles', 79.99)">Buy Now</button>
-        </div>
-
-        <div class="market-item">
-          <h4>Ultimate Pack</h4>
-          <div class="amount">100T</div>
-          <div class="price">$99.99</div>
-          <button onclick="addToCart('sheckles100t', '100 Trillion Sheckles', 99.99)">Buy Now</button>
-        </div>
+  <section id="market" class="tab-content tab-active p-6">
+    <h2 class="text-xl mb-4">Buy Items</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div class="bg-gray-700 p-4 rounded">
+        <h3 class="text-lg">Golden Sheckle</h3>
+        <p>$10</p>
+        <button onclick="addToCart('Golden Sheckle', 10)" class="bg-yellow-500 px-3 py-1 mt-2 rounded hover:bg-yellow-400">Buy</button>
       </div>
-    </div>
-  </section>
-
-  <!-- Login -->
-  <section id="login" class="section">
-    <div class="panel form-section">
-      <h3>🔐 Login</h3>
-      <p>Welcome back! Please sign in to your account.</p>
-      <input id="login-user" type="text" placeholder="Username" />
-      <input id="login-pass" type="password" placeholder="Password" />
-      <button onclick="login()">Login</button>
-    </div>
-  </section>
-
-  <!-- Signup -->
-  <section id="signup" class="section">
-    <div class="panel form-section">
-      <h3>📝 Create Account</h3>
-      <p>Join Sheckle Market today and start trading!</p>
-      <input id="signup-user" type="text" placeholder="Choose Username" />
-      <input id="signup-pass" type="password" placeholder="Create Password" />
-      <input id="signup-email" type="email" placeholder="Gmail Address" />
-      <button id="signup-btn" onclick="signup()">Create Account</button>
-      <div id="signup-status"></div>
+      <div class="bg-gray-700 p-4 rounded">
+        <h3 class="text-lg">Platinum Sheckle</h3>
+        <p>$20</p>
+        <button onclick="addToCart('Platinum Sheckle', 20)" class="bg-yellow-500 px-3 py-1 mt-2 rounded hover:bg-yellow-400">Buy</button>
+      </div>
+      <div class="bg-gray-700 p-4 rounded">
+        <h3 class="text-lg">Diamond Sheckle</h3>
+        <p>$50</p>
+        <button onclick="addToCart('Diamond Sheckle', 50)" class="bg-yellow-500 px-3 py-1 mt-2 rounded hover:bg-yellow-400">Buy</button>
+      </div>
     </div>
   </section>
 
   <!-- Cart -->
-  <section id="cart" class="section">
-    <div class="panel" id="cart-panel"></div>
+  <section id="cart" class="tab-content p-6">
+    <h2 class="text-xl mb-4">🛒 Your Cart</h2>
+    <ul id="cartItems" class="mb-4"></ul>
+    <p class="mb-2">Total: $<span id="cartTotal">0</span></p>
+    <button onclick="checkout()" class="bg-green-500 px-4 py-2 rounded hover:bg-green-400">Checkout</button>
   </section>
 
-  <!-- Profile -->
-  <section id="profile" class="section">
-    <div class="panel">
-      <h3>👤 My Profile</h3>
-      <div class="profile-avatar">
-        👤
-      </div>
-      <h4 id="profile-username">Welcome!</h4>
-      <p style="opacity: 0.7;">Account created successfully. Thank you for joining Sheckle Market!</p>
-      <button onclick="logout()" style="
-        padding: 1rem 2rem;
-        background: linear-gradient(45deg, #6c757d, #858e96);
-        color: #fff;
-        border: 0;
-        border-radius: 8px;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 2rem;
-        font-size: 1rem;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-      " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Logout</button>
-    </div>
+  <!-- Login -->
+  <section id="login" class="tab-content p-6">
+    <h2 class="text-xl mb-4">Login</h2>
+    <input id="loginUser" class="block w-full p-2 mb-2 bg-gray-800 rounded" placeholder="Username" />
+    <input id="loginPass" type="password" class="block w-full p-2 mb-2 bg-gray-800 rounded" placeholder="Password" />
+    <button onclick="login()" class="bg-blue-500 px-4 py-2 rounded hover:bg-blue-400">Login</button>
+    <p id="loginMessage" class="mt-2 text-sm"></p>
   </section>
 
-  <footer>
-    &copy; 2025 Sheckle Market. All rights reserved. | 
-    <span id="last-updated">Secure Digital Currency Exchange</span>
-  </footer>
+  <!-- Signup -->
+  <section id="signup" class="tab-content p-6">
+    <h2 class="text-xl mb-4">Signup</h2>
+    <input id="signupUser" class="block w-full p-2 mb-2 bg-gray-800 rounded" placeholder="Username" />
+    <input id="signupPass" type="password" class="block w-full p-2 mb-2 bg-gray-800 rounded" placeholder="Password" />
+    <input id="signupGmail" class="block w-full p-2 mb-2 bg-gray-800 rounded" placeholder="Gmail (must be @gmail.com)" />
+    <button onclick="sendEmailVerification()" class="bg-purple-500 px-4 py-2 rounded hover:bg-purple-400">Send Verification Code</button>
+    <p id="signupMessage" class="mt-2 text-sm"></p>
+  </section>
 
   <script>
-    // Tab switching with smooth transitions
-    document.querySelectorAll('.tab-link').forEach((link) => {
-      link.addEventListener('click', () => {
-        document.querySelectorAll('.tab-link').forEach((l) =>
-          l.classList.remove('active')
-        );
-        document.querySelectorAll('.section').forEach((s) =>
-          s.classList.remove('active')
-        );
-        link.classList.add('active');
-        setTimeout(() => {
-          document.getElementById(link.dataset.target).classList.add('active');
-          if (link.dataset.target === 'cart') renderCart();
-        }, 100);
+    emailjs.init("c3M0Mn0DjoznjXaC8"); // ← Replace with your EmailJS public key
+
+    let cart = [];
+
+    function showTab(id) {
+      document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("tab-active"));
+      document.getElementById(id).classList.add("tab-active");
+      if (id === "cart") updateCartUI();
+    }
+
+    function addToCart(item, price) {
+      cart.push({ item, price });
+      alert(`${item} added to cart!`);
+    }
+
+    function updateCartUI() {
+      const cartList = document.getElementById("cartItems");
+      const totalEl = document.getElementById("cartTotal");
+      cartList.innerHTML = "";
+      let total = 0;
+      cart.forEach((product, i) => {
+        total += product.price;
+        cartList.innerHTML += `
+          <li class="mb-2">
+            ${product.item} - $${product.price}
+            <button onclick="removeItem(${i})" class="ml-2 bg-red-500 px-2 rounded hover:bg-red-400">X</button>
+          </li>
+        `;
       });
-    });
+      totalEl.textContent = total;
+    }
 
-    // Enhanced cart logic with better UX
-    let cartData = [];
-    
-    function getCart() {
-      return cartData;
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCartUI();
     }
-    
-    function saveCart(cart) {
-      cartData = cart;
-      const count = cart.reduce((n, i) => n + i.qty, 0);
-      document.getElementById('cart-count').textContent = count;
-      
-      // Add visual feedback for cart updates
-      const cartTab = document.querySelector('[data-target="cart"]');
-      cartTab.style.transform = 'scale(1.1)';
-      setTimeout(() => {
-        cartTab.style.transform = 'scale(1)';
-      }, 200);
-    }
-    
-    function addToCart(id, name, price) {
-      if (!currentUser) {
-        showAlert('⚠️ Please create an account and login to make purchases!', 'warning');
-        return;
-      }
-      
-      const cart = getCart();
-      const item = cart.find((i) => i.id === id);
-      if (item) {
-        item.qty++;
-      } else {
-        cart.push({ id, name, price, qty: 1 });
-      }
-      saveCart(cart);
-      showAlert('✅ Added to cart successfully!', 'success');
-    }
-    
-    function removeItem(id) {
-      let cart = getCart().filter((i) => i.id !== id);
-      saveCart(cart);
-      renderCart();
-      showAlert('Item removed from cart', 'info');
-    }
-    
-    function clearCart() {
-      if (getCart().length === 0) return;
-      if (confirm('Are you sure you want to clear your cart?')) {
-        saveCart([]);
-        renderCart();
-        showAlert('Cart cleared', 'info');
-      }
-    }
-    
-    function renderCart() {
-      const cart = getCart();
-      const panel = document.getElementById('cart-panel');
-      
-      if (cart.length === 0) {
-        panel.innerHTML = `
-          <h3>🛒 Your Cart</h3>
-          <div style="padding: 3rem; opacity: 0.6;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🛒</div>
-            <h4>Your cart is empty</h4>
-            <p>Browse our market and add some Sheckles to get started!</p>
-          </div>`;
-        return;
-      }
-      
-      let rows = cart
-        .map(
-          (i) => `
-        <tr>
-          <td><strong>${i.name}</strong></td>
-          <td class="qty">${i.qty}</td>
-          <td class="price">$${i.price.toFixed(2)}</td>
-          <td class="sub">$${(i.qty * i.price).toFixed(2)}</td>
-          <td><button onclick="removeItem('${i.id}')" style="
-            padding: 0.5rem 1rem;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s ease;
-          " onmouseover="this.style.background='#c82333'" onmouseout="this.style.background='#dc3545'">Remove</button></td>
-        </tr>`
-        )
-        .join('');
-      
-      const total = cart.reduce((t, i) => t + i.qty * i.price, 0).toFixed(2);
-      
-      panel.innerHTML = `
-        <h3>🛒 Your Cart</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th><th>Action</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-        <div style="text-align: right; margin: 2rem 0;">
-          <h3 style="color: var(--gold); font-size: 2rem;">Total: $${total}</h3>
-        </div>
-        <div class="cart-actions">
-          <button onclick="checkout()">🚀 Checkout</button>
-          <button onclick="clearCart()">🗑️ Clear Cart</button>
-        </div>`;
-    }
-    
+
     function checkout() {
-      if (!currentUser) {
-        showAlert('⚠️ Please login to complete your purchase!', 'warning');
-        return;
-      }
-      
-      const cart = getCart();
       if (cart.length === 0) {
-        showAlert('Your cart is empty!', 'warning');
+        alert("Cart is empty.");
         return;
       }
-      
-      const total = cart.reduce((t, i) => t + i.qty * i.price, 0).toFixed(2);
-      
-      if (confirm(`Complete purchase for $${total}?`)) {
-        showAlert('🎉 Purchase successful! Thank you for your order.', 'success');
-        clearCart();
+      alert("✅ Order placed! Thank you!");
+      cart = [];
+      updateCartUI();
+    }
+
+    function login() {
+      const u = document.getElementById("loginUser").value;
+      const p = document.getElementById("loginPass").value;
+      const saved = localStorage.getItem(u);
+      const msg = document.getElementById("loginMessage");
+      msg.className = "mt-2 text-sm";
+      if (p === saved) {
+        msg.textContent = "✅ Logged in!";
+        msg.classList.add("text-green-400");
+      } else {
+        msg.textContent = "❌ Wrong username or password.";
+        msg.classList.add("text-red-400");
       }
     }
 
-    // Enhanced user management
-    let userData = {};
-    let pendingSignup = {};
-    let currentUser = null;
+    function sendEmailVerification() {
+      const user = document.getElementById("signupUser").value;
+      const pass = document.getElementById("signupPass").value;
+      const gmail = document.getElementById("signupGmail").value;
+      const msg = document.getElementById("signupMessage");
 
-    // Improved alert system
-    function showAlert(message, type = 'info') {
-      const alertDiv = document.createElement('div');
-      alertDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        color: white;
-        font-weight: 600;
-        z-index: 1000;
-        max-width: 300px;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-      `;
-      
-      const colors = {
-        success: 'linear-gradient(45deg, #28a745, #20c997)',
-        error: 'linear-gradient(45deg, #dc3545, #e74c3c)',
-        warning: 'linear-gradient(45deg, #ffc107, #fd7e14)',
-        info: 'linear-gradient(45deg, #17a2b8, #6f42c1)'
-      };
-      
-      alertDiv.style.background = colors[type] || colors.info;
-      alertDiv.textContent = message;
-      
-      document.body.appendChild(alertDiv);
-      
-      setTimeout(() => {
-        alertDiv.style.transform = 'translateX(0)';
-      }, 100);
-      
-      setTimeout(() => {
-        alertDiv.style.transform = 'translateX(400px)';
-        setTimeout(() => {
-          document.body.removeChild(alertDiv);
-        }, 300);
-      }, 4000);
-    }
+      msg.className = "mt-2 text-sm";
 
-    // Function to send real email via EmailJS
-    async function sendVerificationEmail(email, username, code) {
-      if (!emailJSAvailable) {
-        console.log('EmailJS not available, using demo mode');
-        return { success: false, demo: true };
+      if (!gmail.endsWith("@gmail.com")) {
+        msg.textContent = "❌ Please use a Gmail address.";
+        msg.classList.add("text-red-400");
+        return;
       }
 
-      try {
-        const templateParams = {
-          to_email: email,
-          user_name: username,
+      const code = Math.floor(100000 + Math.random() * 900000);
+      localStorage.setItem("verify_code", code);
+      localStorage.setItem("verify_user", JSON.stringify({ user, pass }));
+
+      emailjs.send("gmail_service", "verification_template", {
+        to_email: gmail,
+        message: `Your Sheckle Market verification code is: ${code}`
+      }).then(() => {
+        const entered = prompt("Enter the code sent to your email:");
+        if (entered == code) {
+          const data = JSON.parse(localStorage.getItem("verify_user"));
+          localStorage.setItem(data.user, data.pass);
+          msg.textContent = "✅ Signup complete!";
+          msg.classList.add("text-green-400");
+        } else {
+          msg.textContent = "❌ Incorrect code.";
+          msg.classList.add("text-red-400");
+        }
+      }).catch((err) => {
+        console.error(err);
+        msg.textContent = "❌ Failed to send verification email.";
+        msg.classList.add("text-red-400");
+      });
+    }
+  </script>
+</body>
+</html>
